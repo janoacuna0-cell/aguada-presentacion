@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Henko S.A. — Dos Patagonias. Tres Generaciones.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+  <style>
+    /* ===================== TOKENS ===================== */
+    :root {
+      --void:   #080C09;
+      --dark2:  #111A14;
+      --dark3:  #181F1A;
+      --salt:   #EAEAEA;
+      --ash:    #666666;
+      --ash2:   #999999;
+      --gold:   #C49A45;
+      --forest: #4E8B5F;
+      --ff-d:   'Cormorant Garamond', Georgia, serif;
+      --ff-b:   'Inter', -apple-system, sans-serif;
+      --silk:   cubic-bezier(0.16,1,0.3,1);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { font-size:16px; scroll-behavior:auto; -webkit-font-smoothing:antialiased; }
+    body { background:var(--void); color:var(--salt); font-family:var(--ff-b); font-weight:300; overflow-x:hidden; }
+    img  { display:block; width:100%; height:100%; object-fit:cover; }
+    a    { color:inherit; text-decoration:none; }
+    button { background:none; border:none; cursor:pointer; color:inherit; font-family:inherit; }
+    ::selection { background:var(--gold); color:var(--void); }
+    ::-webkit-scrollbar { width:2px; }
+    ::-webkit-scrollbar-track { background:var(--void); }
+    ::-webkit-scrollbar-thumb { background:var(--gold); }
+
+    /* ===================== SVG ICONS SHARED ===================== */
+    .ico { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ico svg { display:block; }
+
+    /* ===================== LOADER ===================== */
+    #loader {
+      position:fixed; inset:0; z-index:9999;
+      background:var(--void);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2rem;
+    }
+    .ld-pre { font-size:.42rem; letter-spacing:.4em; text-transform:uppercase; color:var(--gold); opacity:0; }
+    .ld-logo { font-family:var(--ff-d); font-size:clamp(3rem,8vw,6rem); font-weight:300; letter-spacing:.45em; color:var(--salt); opacity:0; transform:translateY(20px); }
+    .ld-tag  { font-family:var(--ff-d); font-style:italic; font-size:clamp(1rem,2vw,1.4rem); font-weight:300; color:var(--ash2); opacity:0; }
+    .ld-bar-wrap { width:120px; height:1px; background:rgba(234,234,234,.1); overflow:hidden; margin-top:1rem; }
+    .ld-bar { width:0; height:100%; background:var(--gold); }
+
+    /* ===================== FIXED NAV ===================== */
+    #nav {
+      position:fixed; top:0; left:0; right:0; z-index:800;
+      padding:1.5rem clamp(1.5rem,5vw,4rem);
+      display:flex; align-items:center; justify-content:space-between;
+      transition:background .5s;
+    }
+    #nav.solid { background:rgba(8,12,9,.92); backdrop-filter:blur(14px); }
+    .nav-brand { font-family:var(--ff-d); font-size:1rem; font-weight:300; letter-spacing:.5em; text-transform:uppercase; }
+    .nav-links { display:flex; gap:2.5rem; }
+    .nav-links a { font-size:.5rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ash2); transition:color .3s; }
+    .nav-links a:hover { color:var(--salt); }
+    .nav-links a.gold { color:var(--gold); }
+    .nav-links a.green { color:var(--forest); }
+
+    /* ===================== CHAPTER DOTS ===================== */
+    #chapter-nav {
+      position:fixed; right:2rem; top:50%; transform:translateY(-50%);
+      z-index:700; display:flex; flex-direction:column; gap:.75rem; align-items:center;
+    }
+    .cdot { width:5px; height:5px; border-radius:50%; background:rgba(234,234,234,.22); transition:background .4s, transform .4s; cursor:pointer; }
+    .cdot.active { background:var(--gold); transform:scale(1.4); }
+    .cdot.green-dot.active { background:var(--forest); }
+
+    /* ===================== HERO SPLIT ===================== */
+    #hero { position:relative; width:100vw; height:100svh; min-height:600px; display:flex; overflow:hidden; }
+    .hero-half { flex:1; position:relative; overflow:hidden; transition:flex 0.65s var(--silk); }
+    .hero-half:hover { flex:1.16; }
+    .hero-half img { position:absolute; inset:0; filter:brightness(.32) saturate(.7); transition:filter .6s, transform .8s var(--silk); }
+    .hero-half:hover img { filter:brightness(.5) saturate(.9); transform:scale(1.04); }
+    .hero-half-overlay {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+      padding:3rem 2rem; text-align:center;
+      background:linear-gradient(to top, rgba(8,12,9,.88) 0%, transparent 60%);
+    }
+    .hero-half-label { font-size:.45rem; letter-spacing:.35em; text-transform:uppercase; margin-bottom:.75rem; }
+    .gold-label { color:var(--gold); }
+    .green-label { color:var(--forest); }
+    .hero-half-city { font-family:var(--ff-d); font-size:clamp(2rem,4vw,3.5rem); font-weight:300; letter-spacing:.12em; margin-bottom:.5rem; }
+    .hero-half-sub { font-size:.52rem; letter-spacing:.18em; text-transform:uppercase; color:var(--ash2); }
+    .hero-divider { position:absolute; left:50%; top:0; bottom:0; width:1px; background:linear-gradient(to bottom, transparent, rgba(234,234,234,.28), transparent); transform:translateX(-50%); z-index:2; }
+    .hero-center { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:3; text-align:center; pointer-events:none; }
+    .hero-logo-big { font-family:var(--ff-d); font-size:clamp(1.8rem,4vw,3rem); font-weight:300; letter-spacing:.55em; text-transform:uppercase; background:rgba(8,12,9,.72); padding:.75rem 2rem; backdrop-filter:blur(8px); white-space:nowrap; }
+    .hero-tag { font-family:var(--ff-d); font-style:italic; font-size:clamp(.9rem,1.5vw,1.2rem); color:var(--ash2); margin-top:.75rem; letter-spacing:.05em; }
+    .hero-scroll-ind { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); z-index:3; display:flex; flex-direction:column; align-items:center; gap:.5rem; opacity:.6; }
+    .hero-scroll-ind span { font-size:.4rem; letter-spacing:.3em; text-transform:uppercase; color:var(--ash); }
+    .scroll-line-anim { width:1px; height:36px; background:linear-gradient(to bottom,var(--ash),transparent); animation:sp 2s ease-in-out infinite; }
+    @keyframes sp { 0%,100%{opacity:.3;transform:scaleY(1)} 50%{opacity:.9;transform:scaleY(1.2)} }
+
+    /* ===================== SECTION SHARED ===================== */
+    .sec { padding:clamp(3rem,5vw,5rem) clamp(1.5rem,7vw,6rem); position:relative; }
+    .sec-eye  { font-size:.46rem; letter-spacing:.38em; text-transform:uppercase; color:var(--gold); margin-bottom:1.5rem; }
+    .sec-eye-g{ color:var(--forest); }
+    .sec-h1   { font-family:var(--ff-d); font-size:clamp(2.5rem,6vw,5rem); font-weight:300; letter-spacing:.04em; line-height:1.1; }
+    .sec-body { font-size:clamp(.78rem,1.1vw,.9rem); line-height:2; color:var(--ash2); letter-spacing:.04em; max-width:520px; }
+    .gold-line{ width:36px; height:1px; background:var(--gold); margin-bottom:2rem; }
+    .rv { opacity:0; transform:translateY(26px); transition:opacity .9s var(--silk), transform .9s var(--silk); }
+    .rv.in { opacity:1; transform:none; }
+    .d1{transition-delay:.1s} .d2{transition-delay:.22s} .d3{transition-delay:.34s} .d4{transition-delay:.46s} .d5{transition-delay:.58s}
+
+    /* ===================== HISTORIA ===================== */
+    #historia { background:var(--dark2); }
+    .historia-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+    .historia-photo { height:500px; overflow:hidden; position:relative; }
+    .historia-photo img { filter:brightness(.65) saturate(.7); }
+    .historia-photo-cap { position:absolute; bottom:1.5rem; left:1.5rem; font-size:.46rem; letter-spacing:.25em; text-transform:uppercase; color:var(--ash2); }
+    .timeline { margin-top:2rem; }
+    .tl-item { display:flex; gap:2rem; margin-bottom:2.5rem; position:relative; }
+    .tl-item:not(:last-child)::after { content:''; position:absolute; left:2.5rem; top:2.2rem; width:1px; height:calc(100% + 1rem); background:linear-gradient(to bottom, rgba(196,154,69,.3), transparent); }
+    .tl-dot { flex:0 0 5rem; height:5rem; border-radius:50%; border:1px solid rgba(196,154,69,.3); display:flex; align-items:center; justify-content:center; font-family:var(--ff-d); font-size:.9rem; font-weight:300; color:var(--gold); letter-spacing:.05em; flex-shrink:0; }
+    .tl-content { padding-top:.75rem; }
+    .tl-year { font-size:.44rem; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); margin-bottom:.5rem; }
+    .tl-text { font-family:var(--ff-d); font-size:1.2rem; font-weight:300; letter-spacing:.03em; line-height:1.4; margin-bottom:.4rem; }
+    .tl-sub  { font-size:.65rem; color:var(--ash); letter-spacing:.05em; line-height:1.6; }
+
+    /* ===================== STATS ===================== */
+    #stats { background:var(--dark3); display:grid; grid-template-columns:repeat(4,1fr); }
+    .stat-item { padding:3rem 2rem; text-align:center; border-right:1px solid rgba(234,234,234,.06); }
+    .stat-item:last-child { border-right:none; }
+    .stat-num { font-family:var(--ff-d); font-size:clamp(3rem,5vw,4.5rem); font-weight:300; color:var(--gold); line-height:1; margin-bottom:.75rem; }
+    .stat-num.green { color:var(--forest); }
+    .stat-label { font-size:.52rem; letter-spacing:.25em; text-transform:uppercase; color:var(--ash2); }
+
+    /* ===================== TRELEW HERO ===================== */
+    #trelew-hero { position:relative; height:90vh; min-height:500px; overflow:hidden; display:flex; align-items:flex-end; }
+    .th-bg { position:absolute; inset:0; }
+    .th-bg img { filter:brightness(.3) saturate(.7); }
+    .th-gradient { position:absolute; inset:0; background:linear-gradient(to top, rgba(8,12,9,1) 0%, transparent 55%); }
+    .th-body { position:relative; z-index:2; padding:clamp(3rem,6vw,5rem) clamp(1.5rem,7vw,6rem); }
+    .th-pre  { font-size:.44rem; letter-spacing:.38em; text-transform:uppercase; color:var(--gold); margin-bottom:1.25rem; }
+    .th-title{ font-family:var(--ff-d); font-size:clamp(3.5rem,9vw,8rem); font-weight:300; letter-spacing:.08em; line-height:.9; }
+    .th-tagline{ font-family:var(--ff-d); font-style:italic; font-size:clamp(1rem,2vw,1.5rem); color:var(--ash2); margin-top:1.25rem; }
+
+    /* ===================== HABITACIONES ===================== */
+    #habitaciones { background:var(--void); }
+    .hab-header { margin-bottom:2rem; }
+    .hab-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; }
+    .hab-card { position:relative; overflow:hidden; border-radius:1px; }
+    .hab-card-img { height:240px; overflow:hidden; }
+    .hab-card-img img { filter:brightness(.6) saturate(.7); transition:transform .8s var(--silk), filter .5s; }
+    .hab-card:hover .hab-card-img img { transform:scale(1.05); filter:brightness(.75) saturate(.9); }
+    .hab-card-body { background:var(--dark2); padding:1.5rem; }
+    .hab-card-tag  { font-size:.44rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:.6rem; }
+    .hab-card-name { font-family:var(--ff-d); font-size:1.25rem; font-weight:300; letter-spacing:.05em; margin-bottom:.4rem; }
+    .hab-card-size { font-size:.6rem; color:var(--ash); letter-spacing:.1em; }
+    .hab-amenities { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem; }
+    .amenity-tag   { font-size:.42rem; letter-spacing:.12em; padding:.3rem .6rem; border:1px solid rgba(234,234,234,.12); color:var(--ash2); }
+
+    /* ===================== SERVICIOS ===================== */
+    #servicios { background:var(--dark2); }
+    .serv-intro { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; margin-bottom:0; }
+    .serv-photo { height:420px; overflow:hidden; }
+    .serv-photo img { filter:brightness(.65) saturate(.7); }
+    .serv-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:1px; background:rgba(234,234,234,.06); margin-top:2.5rem; }
+    .serv-item { background:var(--dark2); padding:1.75rem 1.25rem; text-align:center; transition:background .35s; display:flex; flex-direction:column; align-items:center; gap:.75rem; }
+    .serv-item:hover { background:var(--dark3); }
+    .serv-item .ico { color:var(--gold); opacity:.8; }
+    .serv-item:hover .ico { opacity:1; }
+    .serv-name { font-size:.48rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ash2); }
+
+    /* ===================== RESTAURANTE CARD ===================== */
+    #restaurante-card { background:var(--void); }
+    .rest-card { position:relative; overflow:hidden; height:420px; display:flex; align-items:flex-end; }
+    .rest-card-bg { position:absolute; inset:0; }
+    .rest-card-bg img { filter:brightness(.3) saturate(.7); }
+    .rest-card-overlay { position:absolute; inset:0; background:linear-gradient(to right, rgba(8,12,9,.95) 40%, transparent 100%); }
+    .rest-card-body { position:relative; z-index:2; padding:3rem 4rem; max-width:550px; }
+    .rest-card-tag   { font-size:.44rem; letter-spacing:.35em; text-transform:uppercase; color:var(--gold); margin-bottom:1.25rem; }
+    .rest-card-title { font-family:var(--ff-d); font-size:clamp(2.5rem,4vw,4rem); font-weight:300; letter-spacing:.08em; margin-bottom:1rem; }
+    .rest-card-copy  { font-size:.78rem; line-height:1.9; color:var(--ash2); margin-bottom:2rem; max-width:380px; }
+    .btn-outline { font-size:.5rem; letter-spacing:.25em; text-transform:uppercase; padding:.85rem 2rem; border:1px solid rgba(234,234,234,.35); transition:background .4s var(--silk), color .4s; display:inline-block; }
+    .btn-outline:hover { background:var(--salt); color:var(--void); }
+    .btn-gold { border-color:var(--gold); color:var(--gold); }
+    .btn-gold:hover { background:var(--gold); color:var(--void); }
+
+    /* ===================== ATRACTIVOS ===================== */
+    #atractivos { background:var(--dark3); }
+    .atr-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; margin-top:2rem; }
+    .atr-card { position:relative; overflow:hidden; height:280px; }
+    .atr-card a.atr-link { position:absolute; inset:0; z-index:3; }
+    .atr-card img { filter:brightness(.42) saturate(.6); transition:filter .6s, transform .8s var(--silk); }
+    .atr-card:hover img { filter:brightness(.62) saturate(.85); transform:scale(1.04); }
+    .atr-body { position:absolute; bottom:0; left:0; right:0; padding:2rem; background:linear-gradient(to top, rgba(8,12,9,.88), transparent); z-index:2; }
+    .atr-name { font-family:var(--ff-d); font-size:1.25rem; font-weight:300; letter-spacing:.05em; margin-bottom:.4rem; }
+    .atr-dist { font-size:.46rem; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); }
+    .atr-desc { font-size:.62rem; color:var(--ash2); line-height:1.7; margin-top:.5rem; }
+    .atr-visit { display:inline-flex; align-items:center; gap:.5rem; margin-top:.75rem; font-size:.44rem; letter-spacing:.2em; text-transform:uppercase; color:var(--forest); border-bottom:1px solid rgba(78,139,95,.4); padding-bottom:.15rem; }
+
+    /* ===================== ESQUEL HERO ===================== */
+    #esquel-hero { position:relative; height:90vh; min-height:500px; overflow:hidden; display:flex; align-items:flex-end; background:var(--dark2); }
+    .eh-bg { position:absolute; inset:0; }
+    .eh-bg img { filter:brightness(.3) saturate(.65); }
+    .eh-gradient { position:absolute; inset:0; background:linear-gradient(to top, rgba(8,12,9,1) 0%, transparent 55%); }
+    .eh-body { position:relative; z-index:2; padding:clamp(3rem,6vw,5rem) clamp(1.5rem,7vw,6rem); }
+    .eh-pre  { font-size:.44rem; letter-spacing:.38em; text-transform:uppercase; color:var(--forest); margin-bottom:1.25rem; }
+    .eh-title{ font-family:var(--ff-d); font-size:clamp(3.5rem,9vw,8rem); font-weight:300; letter-spacing:.08em; line-height:.9; }
+    .eh-tagline{ font-family:var(--ff-d); font-style:italic; font-size:clamp(1rem,2vw,1.5rem); color:var(--ash2); margin-top:1.25rem; }
+    .eh-accent { color:var(--forest); }
+
+    /* ===================== EL BIGÜÁ ===================== */
+    #bigua { background:var(--void); }
+    .bigua-layout { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:start; margin-top:2rem; }
+    .bigua-photos { display:grid; grid-template-rows:320px 200px; gap:1rem; }
+    .bigua-photo-big { overflow:hidden; }
+    .bigua-photo-big img { filter:brightness(.7) saturate(.7); transition:transform .8s var(--silk); }
+    .bigua-photo-big:hover img { transform:scale(1.04); }
+    .bigua-photo-sm { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .bigua-photo-sm > div { overflow:hidden; }
+    .bigua-photo-sm img { filter:brightness(.65) saturate(.7); transition:transform .8s var(--silk); }
+    .bigua-photo-sm > div:hover img { transform:scale(1.06); }
+    .bigua-info { padding-top:2rem; }
+    .bigua-quote { border-left:1px solid var(--forest); padding-left:1.5rem; font-family:var(--ff-d); font-style:italic; font-size:1.2rem; font-weight:300; color:var(--ash2); line-height:1.5; margin:2rem 0; }
+    .menu-list-items { margin:1.5rem 0 2rem; }
+    .menu-list-item { display:flex; align-items:baseline; gap:1rem; padding:.75rem 0; border-bottom:1px solid rgba(234,234,234,.06); }
+    .mli-n    { font-size:.44rem; letter-spacing:.3em; color:var(--forest); min-width:1.5rem; }
+    .mli-name { font-family:var(--ff-d); font-size:1.1rem; font-weight:300; letter-spacing:.04em; }
+    .mli-desc { font-size:.6rem; color:var(--ash); margin-left:auto; letter-spacing:.05em; }
+    .hours-row { display:flex; gap:3rem; margin-top:1.5rem; }
+    .hour-label{ font-size:.44rem; letter-spacing:.25em; text-transform:uppercase; color:var(--forest); margin-bottom:.3rem; }
+    .hour-time { font-family:var(--ff-d); font-size:1.1rem; font-weight:300; }
+
+    /* ===================== EVENTOS ===================== */
+    #eventos { background:var(--dark2); }
+    .eventos-layout { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; margin-top:2rem; }
+    .eventos-configs { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:2.5rem; }
+    .config-card { padding:1.5rem; border:1px solid rgba(234,234,234,.08); transition:border-color .4s, background .4s; display:flex; flex-direction:column; align-items:flex-start; gap:.5rem; }
+    .config-card:hover { border-color:rgba(78,139,95,.4); background:rgba(78,139,95,.05); }
+    .config-card .ico { color:var(--forest); margin-bottom:.25rem; }
+    .config-name { font-family:var(--ff-d); font-size:1rem; font-weight:300; letter-spacing:.06em; }
+    .config-cap  { font-size:.52rem; color:var(--ash); letter-spacing:.1em; }
+    .eventos-features { margin-top:2rem; }
+    .e-feat { display:flex; align-items:center; gap:1rem; padding:.85rem 0; border-bottom:1px solid rgba(234,234,234,.06); }
+    .e-feat-dot { width:5px; height:5px; border-radius:50%; background:var(--forest); flex-shrink:0; }
+    .e-feat-text{ font-size:.68rem; color:var(--ash2); letter-spacing:.05em; }
+    .eventos-photo { height:480px; overflow:hidden; }
+    .eventos-photo img { filter:brightness(.7) saturate(.7); }
+
+    /* ===================== CONTACTO ===================== */
+    #contacto { background:var(--dark3); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:2rem; }
+    .contact-card { padding:3rem; border:1px solid rgba(234,234,234,.07); position:relative; overflow:hidden; transition:border-color .4s; }
+    .contact-card:hover { border-color:rgba(234,234,234,.15); }
+    .cc-accent { position:absolute; top:0; left:0; right:0; height:2px; }
+    .cc-gold  { background:var(--gold); }
+    .cc-green { background:var(--forest); }
+    .cc-hotel { font-size:.44rem; letter-spacing:.35em; text-transform:uppercase; margin-bottom:1rem; }
+    .cc-name  { font-family:var(--ff-d); font-size:2rem; font-weight:300; letter-spacing:.06em; margin-bottom:.4rem; }
+    .cc-sub   { font-size:.6rem; color:var(--ash); letter-spacing:.12em; margin-bottom:2rem; }
+    .cc-info  { margin-top:1.5rem; }
+    .cc-row   { display:flex; align-items:flex-start; gap:1rem; padding:.75rem 0; border-bottom:1px solid rgba(234,234,234,.06); }
+    .cc-row .ico { color:var(--ash); margin-top:.1rem; flex-shrink:0; }
+    .cc-detail{ font-size:.65rem; color:var(--ash2); letter-spacing:.06em; line-height:1.7; }
+    .cc-detail a { color:inherit; transition:color .3s; }
+    .cc-detail a:hover { color:var(--salt); }
+    .btn-wa { display:inline-flex; align-items:center; gap:.75rem; margin-top:1.75rem; padding:.85rem 1.75rem; background:rgba(37,211,102,.1); border:1px solid rgba(37,211,102,.28); color:#3ECC6B; font-size:.5rem; letter-spacing:.2em; text-transform:uppercase; transition:all .4s; }
+    .btn-wa:hover { background:rgba(37,211,102,.2); border-color:rgba(37,211,102,.55); }
+    .btn-wa .ico { color:#3ECC6B; }
+
+    /* ===================== FOOTER ===================== */
+    #footer { padding:2.5rem clamp(1.5rem,7vw,6rem) 1.5rem; border-top:1px solid rgba(234,234,234,.06); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:2rem; }
+    .footer-brand { font-family:var(--ff-d); font-size:1.4rem; font-weight:300; letter-spacing:.5em; }
+    .footer-copy  { font-size:.48rem; letter-spacing:.18em; color:var(--ash); }
+    .footer-links { display:flex; gap:2rem; flex-wrap:wrap; }
+    .footer-links a { font-size:.46rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ash); transition:color .3s; }
+    .footer-links a:hover { color:var(--salt); }
+    .footer-studio { width:100%; border-top:1px solid rgba(234,234,234,.06); padding-top:1.5rem; text-align:center; font-size:.44rem; letter-spacing:.18em; color:var(--ash); }
+    .footer-studio a { color:var(--ash2); transition:color .3s; }
+    .footer-studio a:hover { color:var(--salt); }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width:900px) {
+      .historia-grid,.serv-intro,.bigua-layout,.eventos-layout,.contact-grid { grid-template-columns:1fr; }
+      #stats { grid-template-columns:1fr 1fr; }
+      .stat-item:nth-child(2) { border-right:none; }
+      .atr-grid { grid-template-columns:1fr; }
+    }
+    @media (max-width:640px) {
+      #chapter-nav,.nav-links { display:none; }
+      .hero-half-city { font-size:1.6rem; }
+      .hero-logo-big { font-size:1.4rem; letter-spacing:.3em; }
+      .hab-grid { grid-template-columns:1fr; }
+      .eventos-configs { grid-template-columns:1fr; }
+      .bigua-photos { grid-template-rows:240px auto; }
+      #stats { grid-template-columns:1fr 1fr; }
+      .stat-item { border-right:none; border-bottom:1px solid rgba(234,234,234,.06); }
+    }
+
+    /* ===================== IMAGE REVEAL ===================== */
+    .img-reveal { overflow:hidden; position:relative; }
+    .img-reveal::after { content:''; position:absolute; inset:0; background:var(--void); transform-origin:left; transform:scaleX(1); transition:transform 1.1s var(--silk); }
+    .img-reveal.in::after { transform:scaleX(0); transform-origin:right; }
+    #historia .img-reveal::after,
+    #esquel-hero .img-reveal::after,
+    #bigua .img-reveal::after,
+    #eventos .img-reveal::after { background:var(--dark2); }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== LOADER ==================== -->
+  <div id="loader">
+    <p class="ld-pre">Grupo Hotelero</p>
+    <h1 class="ld-logo">HENKO</h1>
+    <p class="ld-tag">Dos Patagonias. Tres Generaciones.</p>
+    <div class="ld-bar-wrap"><div class="ld-bar" id="lbar"></div></div>
+  </div>
+
+  <!-- ==================== NAV ==================== -->
+  <nav id="nav">
+    <span class="nav-brand">Henko S.A.</span>
+    <div class="nav-links">
+      <a href="#historia">Historia</a>
+      <a href="#trelew-hero" class="gold">Aguada Hotel · Trelew</a>
+      <a href="#esquel-hero" class="green">Tehuelche · Esquel</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </nav>
+
+  <!-- ==================== CHAPTER DOTS ==================== -->
+  <div id="chapter-nav">
+    <div class="cdot active"    data-target="hero"        title="Inicio"></div>
+    <div class="cdot"           data-target="historia"    title="Historia"></div>
+    <div class="cdot"           data-target="trelew-hero" title="Trelew"></div>
+    <div class="cdot"           data-target="habitaciones"title="Habitaciones"></div>
+    <div class="cdot"           data-target="atractivos"  title="Atractivos"></div>
+    <div class="cdot green-dot" data-target="esquel-hero" title="Esquel"></div>
+    <div class="cdot green-dot" data-target="bigua"       title="El Bigüá"></div>
+    <div class="cdot"           data-target="contacto"    title="Contacto"></div>
+  </div>
+
+  <!-- ==================== HERO SPLIT ==================== -->
+  <section id="hero">
+    <div class="hero-half">
+      <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/67253bdd98a8221c7c3b376f_DJI_0350-1.jpg" alt="Aguada Hotel Trelew">
+      <div class="hero-half-overlay">
+        <span class="hero-half-label gold-label">La Patagonia Atlántica</span>
+        <h2 class="hero-half-city">Trelew</h2>
+        <span class="hero-half-sub">Aguada Hotel · Chubut</span>
+      </div>
+    </div>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-center">
+      <div class="hero-logo-big">HENKO S.A.</div>
+      <p class="hero-tag">Dos Patagonias. Tres Generaciones.</p>
+    </div>
+
+    <div class="hero-half">
+      <img src="https://images.unsplash.com/photo-1637580980556-085dee659c7e?w=1920&q=90" alt="Cordillera Patagónica - Esquel">
+      <div class="hero-half-overlay">
+        <span class="hero-half-label green-label">La Patagonia Andina</span>
+        <h2 class="hero-half-city">Esquel</h2>
+        <span class="hero-half-sub">Hotel Tehuelche · Chubut</span>
+      </div>
+    </div>
+
+    <div class="hero-scroll-ind">
+      <div class="scroll-line-anim"></div>
+      <span>Descubrir</span>
+    </div>
+  </section>
+
+  <!-- ==================== HISTORIA ==================== -->
+  <section class="sec" id="historia" style="background:var(--dark2);">
+    <div class="historia-grid">
+      <div>
+        <p class="sec-eye rv">Nuestra Historia</p>
+        <h2 class="sec-h1 rv d1">Tres generaciones<br>de hospitalidad</h2>
+        <div class="gold-line rv d2" style="margin-top:2rem;"></div>
+        <div class="timeline rv d2">
+          <div class="tl-item">
+            <div class="tl-dot">60s</div>
+            <div class="tl-content">
+              <p class="tl-year">Década de 1960</p>
+              <p class="tl-text">Bar "La Aguada Don Pepe"</p>
+              <p class="tl-sub">En una esquina emblemática del valle, un bar se convierte en punto de encuentro de la comunidad. La semilla de todo lo que vendría.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">73</div>
+            <div class="tl-content">
+              <p class="tl-year">1973</p>
+              <p class="tl-text">Hotel Rayentray — Trelew</p>
+              <p class="tl-sub">El primer gran paso. El edificio del Rayentray marca el inicio de una tradición hotelera en la Patagonia atlántica.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="border-color:rgba(78,139,95,.4);color:var(--forest);">+50</div>
+            <div class="tl-content">
+              <p class="tl-year">Más de 50 años</p>
+              <p class="tl-text">Expansión a la Cordillera</p>
+              <p class="tl-sub">El grupo crece. El Hotel Tehuelche en Esquel suma la Patagonia andina al portfolio. Dos geografías, una identidad.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot">Hoy</div>
+            <div class="tl-content">
+              <p class="tl-year">Tercera Generación</p>
+              <p class="tl-text">Aguada Hotel · Tehuelche Hotel</p>
+              <p class="tl-sub">El Rayentray se renueva como Aguada Hotel. La tercera generación mantiene viva la tradición con la mirada en el futuro.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="historia-photo img-reveal rv d1">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/672650b47827f8d312004b7a_file%20(8).jpg" alt="Historia Henko">
+          <span class="historia-photo-cap">Archivo familiar — Henko S.A.</span>
+        </div>
+        <div style="margin-top:2rem;padding:2rem;background:var(--dark3);border-left:2px solid var(--gold);" class="rv d2">
+          <p style="font-family:var(--ff-d);font-style:italic;font-size:1.15rem;font-weight:300;line-height:1.6;color:var(--ash2);">"Nos renovamos con Aguada Hotel en la meseta y Tehuelche Hotel en la cordillera, reflejando nuestra evolución mientras seguimos comprometidos con brindar experiencias auténticas."</p>
+          <p style="font-size:.46rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-top:1rem;">— Henko S.A.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== STATS ==================== -->
+  <div id="stats">
+    <div class="stat-item">
+      <div class="stat-num" data-target="50" data-suffix="+">0</div>
+      <div class="stat-label">Años de Historia</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-target="3">0</div>
+      <div class="stat-label">Generaciones</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num green" data-target="2">0</div>
+      <div class="stat-label">Propiedades</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num green" data-target="2">0</div>
+      <div class="stat-label">Patagonias</div>
+    </div>
+  </div>
+
+  <!-- ==================== AGUADA HOTEL TRELEW HERO ==================== -->
+  <div id="trelew-hero">
+    <div class="th-bg img-reveal">
+      <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/67253b4f9490ab721be03279_DJI_0557-1.jpg" alt="Aguada Hotel Trelew">
+    </div>
+    <div class="th-gradient"></div>
+    <div class="th-body">
+      <p class="th-pre rv">I — La Patagonia Atlántica</p>
+      <h2 class="th-title rv d1">Aguada<br>Hotel</h2>
+      <p class="th-tagline rv d2">La Meseta y el Mar · Trelew, Chubut</p>
+    </div>
+  </div>
+
+  <!-- ==================== HABITACIONES ==================== -->
+  <section class="sec" id="habitaciones">
+    <div class="hab-header">
+      <p class="sec-eye rv">02 — Habitaciones</p>
+      <h3 class="sec-h1 rv d1">Diseñadas<br>para cada huésped</h3>
+      <p class="sec-body rv d2" style="margin-top:1.5rem;">Desde estándar de 16 m² hasta suites con bañera y living. Todas incluyen WiFi, caja de seguridad, minibar, TV LED y desayuno.</p>
+    </div>
+    <div class="hab-grid">
+      <div class="hab-card rv d1">
+        <div class="hab-card-img img-reveal">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a166d6e0c332eecb443_Habitaci%C3%B3n%20Dobloe-Matrimonial%20(2).avif" alt="Doble Matrimonial Estándar">
+        </div>
+        <div class="hab-card-body">
+          <p class="hab-card-tag">Doble · 16 m²</p>
+          <h4 class="hab-card-name">Matrimonial Estándar</h4>
+          <p class="hab-card-size">Cama matrimonial · Baño privado · Calefacción</p>
+          <div class="hab-amenities"><span class="amenity-tag">WiFi</span><span class="amenity-tag">Minibar</span><span class="amenity-tag">Desayuno</span></div>
+        </div>
+      </div>
+      <div class="hab-card rv d2">
+        <div class="hab-card-img img-reveal">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a15f625e04e46eb8658_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(3).avif" alt="Doble Twin Estándar">
+        </div>
+        <div class="hab-card-body">
+          <p class="hab-card-tag">Doble Twin · 16 m²</p>
+          <h4 class="hab-card-name">Twin Estándar</h4>
+          <p class="hab-card-size">2 Camas individuales · Baño privado · Calefacción</p>
+          <div class="hab-amenities"><span class="amenity-tag">WiFi</span><span class="amenity-tag">Minibar</span><span class="amenity-tag">Desayuno</span></div>
+        </div>
+      </div>
+      <div class="hab-card rv d3">
+        <div class="hab-card-img img-reveal">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a16a5d6dc7d56ef7b36_Habitaci%C3%B3n%20Doble-Matrimonial%20(1).avif" alt="Matrimonial Superior">
+        </div>
+        <div class="hab-card-body">
+          <p class="hab-card-tag">Superior · 20 m²</p>
+          <h4 class="hab-card-name">Matrimonial Superior</h4>
+          <p class="hab-card-size">Ante-baño · Bañera · Living · Calefacción</p>
+          <div class="hab-amenities"><span class="amenity-tag">WiFi</span><span class="amenity-tag">Minibar</span><span class="amenity-tag">Bañera</span><span class="amenity-tag">Living</span></div>
+        </div>
+      </div>
+      <div class="hab-card rv d4">
+        <div class="hab-card-img img-reveal">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a2a6b60b296b8405df7_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(2)%20(1).avif" alt="Twin Superior">
+        </div>
+        <div class="hab-card-body">
+          <p class="hab-card-tag">Twin Superior · 20 m²</p>
+          <h4 class="hab-card-name">Twin Superior</h4>
+          <p class="hab-card-size">2 Camas · Ante-baño · Bañera · Living</p>
+          <div class="hab-amenities"><span class="amenity-tag">WiFi</span><span class="amenity-tag">Minibar</span><span class="amenity-tag">Bañera</span><span class="amenity-tag">Living</span></div>
+        </div>
+      </div>
+      <div class="hab-card rv d2">
+        <div class="hab-card-img img-reveal">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/67264a20a9c1166c35ce1ad3_PSX_20241102_124751.jpg" alt="Triple Estándar">
+        </div>
+        <div class="hab-card-body">
+          <p class="hab-card-tag">Triple · 16 m²</p>
+          <h4 class="hab-card-name">Triple Estándar</h4>
+          <p class="hab-card-size">Matrimonial + individual · Baño privado</p>
+          <div class="hab-amenities"><span class="amenity-tag">WiFi</span><span class="amenity-tag">Minibar</span><span class="amenity-tag">Desayuno</span></div>
+        </div>
+      </div>
+      <div class="hab-card rv d3">
+        <div class="hab-card-img img-reveal">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a169cb112ecea76e41b_Triple%20PARTE%20NUEVA%20(2).avif" alt="Triple Superior">
+        </div>
+        <div class="hab-card-body">
+          <p class="hab-card-tag">Triple Superior · 20 m²</p>
+          <h4 class="hab-card-name">Triple Superior</h4>
+          <p class="hab-card-size">Superior · Ante-baño · Bañera</p>
+          <div class="hab-amenities"><span class="amenity-tag">WiFi</span><span class="amenity-tag">Minibar</span><span class="amenity-tag">Bañera</span></div>
+        </div>
+      </div>
+      <div class="hab-card rv d4">
+        <div class="hab-card-img img-reveal">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/672648b2ad182a3247787775__LMR5255-1.jpg" alt="Suite">
+        </div>
+        <div class="hab-card-body">
+          <p class="hab-card-tag">Suite · 20 m²</p>
+          <h4 class="hab-card-name">Suite</h4>
+          <p class="hab-card-size">3 Individuales · Ante-baño · Bañera · Living</p>
+          <div class="hab-amenities"><span class="amenity-tag">WiFi</span><span class="amenity-tag">Minibar</span><span class="amenity-tag">Bañera</span><span class="amenity-tag">Living</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SERVICIOS ==================== -->
+  <section class="sec" id="servicios" style="background:var(--dark2);">
+    <div class="serv-intro">
+      <div>
+        <p class="sec-eye rv">03 — Servicios</p>
+        <h3 class="sec-h1 rv d1">Todo lo que<br>un huésped necesita</h3>
+        <p class="sec-body rv d2" style="margin-top:1.5rem;">Aguada Hotel ofrece una experiencia completa diseñada para garantizar una estadía placentera desde el primer momento.</p>
+        <div class="serv-grid">
+          <div class="serv-item rv">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/></svg></span>
+            <span class="serv-name">WiFi</span>
+          </div>
+          <div class="serv-item rv d1">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg></span>
+            <span class="serv-name">Parking</span>
+          </div>
+          <div class="serv-item rv d2">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg></span>
+            <span class="serv-name">Restaurante</span>
+          </div>
+          <div class="serv-item rv d3">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></span>
+            <span class="serv-name">Cafetería</span>
+          </div>
+          <div class="serv-item rv">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <span class="serv-name">Salón Eventos</span>
+          </div>
+          <div class="serv-item rv d1">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+            <span class="serv-name">Sala Reunión</span>
+          </div>
+          <div class="serv-item rv d2">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 12c.6.5 1.2 1 2.5 1C7 13 7 11 9.5 11s2.5 2 5 2 2.5-2 5-2 2.5 2 2.5 2"/><path d="M2 7c.6.5 1.2 1 2.5 1C7 8 7 6 9.5 6s2.5 2 5 2 2.5-2 5-2 2.5 2 2.5 2"/><path d="M2 17c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 2.5 2"/></svg></span>
+            <span class="serv-name">Piscina</span>
+          </div>
+          <div class="serv-item rv d3">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></span>
+            <span class="serv-name">Sauna</span>
+          </div>
+          <div class="serv-item rv">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="7" r="2"/><circle cx="17" cy="9" r="2"/><circle cx="19" cy="16" r="2"/><circle cx="4" cy="16" r="2"/><path d="M9 10c0 2 1.5 4 4.5 4S18 13 18 11"/></svg></span>
+            <span class="serv-name">Pet Friendly</span>
+          </div>
+          <div class="serv-item rv d1">
+            <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg></span>
+            <span class="serv-name">Lavandería</span>
+          </div>
+        </div>
+      </div>
+      <div class="serv-photo img-reveal rv d2">
+        <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/672542f0fc3a07ae3d2ce223__LMR0850-1.jpg" alt="Aguada Hotel Servicios">
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== RESTAURANTE CARD ==================== -->
+  <div id="restaurante-card">
+    <div class="rest-card">
+      <div class="rest-card-bg">
+        <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/67254852152b1ccbae153dcd__LMR0828-1.jpg" alt="Restaurante Aguada">
+      </div>
+      <div class="rest-card-overlay"></div>
+      <div class="rest-card-body">
+        <p class="rest-card-tag rv">04 — Gastronomía de Autor</p>
+        <h3 class="rest-card-title rv d1">Restaurante<br>Aguada</h3>
+        <p class="rest-card-copy rv d2">Mar. Fuego. Meseta. Una cocina patagónica de autor que convierte cada plato en un ritual. Langostino atlántico, cordero de la meseta, fuego de lenga.</p>
+        <a href="https://aguada-restaurante.vercel.app" target="_blank" class="btn-outline btn-gold rv d3">Ver el Restaurante →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ATRACTIVOS ==================== -->
+  <section class="sec" id="atractivos" style="background:var(--dark3);">
+    <p class="sec-eye rv">05 — Trelew y la región</p>
+    <h3 class="sec-h1 rv d1">La Patagonia<br>a su puerta</h3>
+    <p class="sec-body rv d2" style="margin-top:1.25rem;">Trelew es la puerta de entrada a las maravillas de la Patagonia atlántica. A poca distancia, una naturaleza que no tiene igual.</p>
+
+    <div class="atr-grid">
+      <div class="atr-card img-reveal rv d1" style="position:relative;">
+        <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/6723caf44f96d824cef83dcf_20211103_164041.jpg" alt="MEF">
+        <a href="https://mef.org.ar/" target="_blank" class="atr-link" aria-label="Visitar sitio del MEF"></a>
+        <div class="atr-body">
+          <h4 class="atr-name">Museo Paleontológico Egidio Feruglio</h4>
+          <p class="atr-dist">En Trelew</p>
+          <p class="atr-desc">Uno de los centros paleontológicos más importantes de América. Fósiles únicos de la Patagonia prehistórica.</p>
+          <span class="atr-visit">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            mef.org.ar
+          </span>
+        </div>
+      </div>
+
+      <div class="atr-card img-reveal rv d2">
+        <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/6719fed67c64bc246cbb65e5_Atractivos%200202.avif" alt="Colonia Galesa">
+        <div class="atr-body">
+          <h4 class="atr-name">Valle Inferior del Río Chubut</h4>
+          <p class="atr-dist">Colonia Galesa · Gaiman</p>
+          <p class="atr-desc">Casas de té, capillas galesas, álamos junto al río. 150 años de herencia galesa en la Patagonia.</p>
+        </div>
+      </div>
+
+      <div class="atr-card img-reveal rv d3">
+        <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/67253961aa53ffc0d541abc3__LMR1782-1.jpg" alt="Punta Tombo">
+        <div class="atr-body">
+          <h4 class="atr-name">Punta Tombo</h4>
+          <p class="atr-dist">110 km · Pingüinos de Magallanes</p>
+          <p class="atr-desc">Una de las colonias de pingüinos más grandes del mundo. Sendero de avistaje en hábitat natural.</p>
+        </div>
+      </div>
+
+      <div class="atr-card img-reveal rv d4">
+        <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/67253974cd58b125d66ddf83_LMR_2222-1.jpg" alt="Península Valdés">
+        <div class="atr-body">
+          <h4 class="atr-name">Península Valdés</h4>
+          <p class="atr-dist">Patrimonio Natural UNESCO</p>
+          <p class="atr-desc">Ballenas, orcas, elefantes y lobos marinos. Puerto Pirámides para los avistajes de ballenas.</p>
+        </div>
+      </div>
+
+      <div class="atr-card img-reveal rv d2" style="position:relative;">
+        <img src="https://images.unsplash.com/photo-1584824388878-8fa3c07c5523?w=800&q=85" alt="Elefantes marinos">
+        <a href="https://laantonieta.com.ar/?origin=serp_auto" target="_blank" class="atr-link" aria-label="Ver La Antonieta"></a>
+        <div class="atr-body">
+          <h4 class="atr-name">La Antonieta · Elefantes Marinos</h4>
+          <p class="atr-dist">Patagonia Atlántica</p>
+          <p class="atr-desc">Colonia de elefantes marinos del sur en su entorno natural. Una de las experiencias más únicas de la costa patagónica.</p>
+          <span class="atr-visit">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Ver más
+          </span>
+        </div>
+      </div>
+
+      <div class="atr-card img-reveal rv d3">
+        <img src="https://images.unsplash.com/photo-1490750967868-88df5691cc3c?w=800&q=85" alt="Campo de Tulipanes 28 de Julio">
+        <div class="atr-body">
+          <h4 class="atr-name">Campo de Tulipanes</h4>
+          <p class="atr-dist">28 de Julio · Valle del Chubut</p>
+          <p class="atr-desc">Colores que florecen en la Patagonia. Un espectáculo único de tulipanes en el valle del Río Chubut, legado de la herencia galesa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOTEL TEHUELCHE HERO ==================== -->
+  <div id="esquel-hero">
+    <div class="eh-bg img-reveal">
+      <img src="https://images.unsplash.com/photo-1637580980556-085dee659c7e?w=1920&q=90" alt="Cordillera Patagónica Esquel">
+    </div>
+    <div class="eh-gradient"></div>
+    <div class="eh-body">
+      <p class="eh-pre rv">II — La Patagonia Andina</p>
+      <h2 class="eh-title rv d1">Hotel<br><span class="eh-accent">Tehuelche</span></h2>
+      <p class="eh-tagline rv d2">La Cordillera Patagónica · Esquel, Chubut</p>
+    </div>
+  </div>
+
+  <!-- ==================== EL BIGÜÁ ==================== -->
+  <section class="sec" id="bigua">
+    <p class="sec-eye rv sec-eye-g">01 — El Restaurante</p>
+    <h3 class="sec-h1 rv d1">El Bigüá</h3>
+    <p class="sec-body rv d2" style="margin-top:1rem;">Cocina patagónica de temporada en el Hotel Tehuelche. La carta cambia con lo que llega de los productores locales. Pocos platos. Cada uno cuenta algo.</p>
+
+    <div class="bigua-layout">
+      <div class="bigua-photos">
+        <div class="bigua-photo-big img-reveal rv">
+          <img src="https://elbigua.com.ar/_astro/la-cocina.DB2492G-_2kVQxv.webp" alt="El Bigüá — La cocina">
+        </div>
+        <div class="bigua-photo-sm">
+          <div class="img-reveal rv d1"><img src="https://elbigua.com.ar/_astro/el-salon.CPwlsuhr_Z2fPe54.webp" alt="El Salón"></div>
+          <div class="img-reveal rv d2"><img src="https://elbigua.com.ar/_astro/bigua.Ch1Svums_ZxU3g2.webp" alt="El Bigüá — el ave" style="object-fit:contain;background:#0d130e;"></div>
+        </div>
+      </div>
+
+      <div class="bigua-info rv d1">
+        <blockquote class="bigua-quote">"Trabajo paciente, cocina anclada en lo que produce esta tierra, sin show. Lo que hay en el plato vino de cerca y fue tratado con tiempo."</blockquote>
+
+        <p style="font-size:.46rem;letter-spacing:.3em;text-transform:uppercase;color:var(--forest);margin-bottom:1.25rem;">La carta de temporada</p>
+        <div class="menu-list-items">
+          <div class="menu-list-item"><span class="mli-n">01</span><span class="mli-name">Cordero patagónico</span><span class="mli-desc">La Meseta</span></div>
+          <div class="menu-list-item"><span class="mli-n">02</span><span class="mli-name">Trucha de los lagos</span><span class="mli-desc">Los ríos andinos</span></div>
+          <div class="menu-list-item"><span class="mli-n">03</span><span class="mli-name">Hongos del bosque andino</span><span class="mli-desc">El bosque</span></div>
+          <div class="menu-list-item"><span class="mli-n">04</span><span class="mli-name">Harinas regionales</span><span class="mli-desc">La tierra</span></div>
+        </div>
+
+        <p style="font-size:.44rem;letter-spacing:.3em;text-transform:uppercase;color:var(--forest);margin-bottom:.75rem;">Horarios de servicio</p>
+        <div class="hours-row">
+          <div><p class="hour-label">Almuerzo</p><p class="hour-time">12:00 — 15:00</p></div>
+          <div><p class="hour-label">Cena</p><p class="hour-time">20:00 — 23:30</p></div>
+        </div>
+        <p style="font-size:.58rem;color:var(--ash);margin-top:1.25rem;letter-spacing:.06em;">Abierto al público. No es necesario ser huésped del hotel.</p>
+        <a href="https://wa.me/5492945697412" target="_blank" class="btn-wa">
+          <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          Reservar por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== EVENTOS Y CONVENCIONES ==================== -->
+  <section class="sec" id="eventos" style="background:var(--dark2);">
+    <div class="eventos-layout">
+      <div>
+        <p class="sec-eye rv sec-eye-g">02 — Eventos y Convenciones</p>
+        <h3 class="sec-h1 rv d1">Donde la mesa<br>puede ser una, o cien</h3>
+        <p class="sec-body rv d2" style="margin-top:1.5rem;">Sala de convenciones con configuraciones flexibles para reuniones corporativas, congresos y eventos sociales. Business center disponible.</p>
+
+        <div class="eventos-configs rv d2">
+          <div class="config-card">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span>
+            <div class="config-name">Auditorio</div>
+            <div class="config-cap">Presentaciones · Conferencias</div>
+          </div>
+          <div class="config-card">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+            <div class="config-name">Banquete</div>
+            <div class="config-cap">Eventos sociales · Celebraciones</div>
+          </div>
+          <div class="config-card">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+            <div class="config-name">Escuela</div>
+            <div class="config-cap">Capacitaciones · Talleres</div>
+          </div>
+          <div class="config-card">
+            <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H7c-1.5 4-2 6-2 8a5 5 0 0 0 5 5z"/></svg></span>
+            <div class="config-name">Cocktail</div>
+            <div class="config-cap">Networking · Recepciones</div>
+          </div>
+        </div>
+
+        <div class="eventos-features rv d3">
+          <div class="e-feat"><div class="e-feat-dot"></div><div class="e-feat-text">Business center con WiFi corporativo de alta velocidad</div></div>
+          <div class="e-feat"><div class="e-feat-dot"></div><div class="e-feat-text">Estaciones de trabajo disponibles para equipos</div></div>
+          <div class="e-feat"><div class="e-feat-dot"></div><div class="e-feat-text">Configuraciones a medida según el tipo de evento</div></div>
+          <div class="e-feat"><div class="e-feat-dot"></div><div class="e-feat-text">Catering con cocina patagónica de El Bigüá</div></div>
+          <div class="e-feat"><div class="e-feat-dot"></div><div class="e-feat-text">Atención especializada para grupos corporativos y turísticos</div></div>
+        </div>
+
+        <a href="https://wa.me/5492945697412?text=Hola%20El%20Big%C3%BC%C3%A1!%20Quer%C3%ADa%20consultar%20por%20presupuesto%20para%20evento." target="_blank" class="btn-wa" style="margin-top:2rem;">
+          <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+          Consultar presupuesto
+        </a>
+      </div>
+
+      <div class="eventos-photo img-reveal rv d2">
+        <img src="https://elbigua.com.ar/_astro/tehuelcheSinFondo.BbMjsV_S_Z1HDLs.webp" alt="Hotel Tehuelche" style="object-fit:contain;background:var(--dark3);padding:3rem;">
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONTACTO ==================== -->
+  <section class="sec" id="contacto" style="background:var(--dark3);">
+    <p class="sec-eye rv">Contacto · Henko S.A.</p>
+    <h3 class="sec-h1 rv d1">Dos propiedades.<br>Un mismo compromiso.</h3>
+
+    <div class="contact-grid">
+      <div class="contact-card rv d1">
+        <div class="cc-accent cc-gold"></div>
+        <p class="cc-hotel" style="color:var(--gold);">Aguada Hotel · Trelew</p>
+        <h4 class="cc-name">Aguada Hotel</h4>
+        <p class="cc-sub">La Patagonia Atlántica · Chubut</p>
+        <div class="cc-info">
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div class="cc-detail">San Martín 101, U9100<br>Trelew, Chubut, Argentina</div>
+          </div>
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.23h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.75-1.13a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <div class="cc-detail"><a href="tel:+5492804434702">+54 9 2804 434702</a></div>
+          </div>
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <div class="cc-detail"><a href="mailto:aguadarecepcion@henkosa.com.ar">aguadarecepcion@henkosa.com.ar</a></div>
+          </div>
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+            <div class="cc-detail"><a href="https://www.hotelaguada.com" target="_blank">hotelaguada.com</a></div>
+          </div>
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg></span>
+            <div class="cc-detail">Restaurante Aguada<br><a href="https://aguada-restaurante.vercel.app" target="_blank">aguada-restaurante.vercel.app</a></div>
+          </div>
+        </div>
+        <a href="https://wa.me/5492804434702" target="_blank" class="btn-wa">
+          <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          WhatsApp Aguada Hotel
+        </a>
+      </div>
+
+      <div class="contact-card rv d2">
+        <div class="cc-accent cc-green"></div>
+        <p class="cc-hotel" style="color:var(--forest);">Hotel Tehuelche · Esquel</p>
+        <h4 class="cc-name">Hotel Tehuelche</h4>
+        <p class="cc-sub">La Patagonia Andina · Chubut</p>
+        <div class="cc-info">
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <div class="cc-detail">9 de Julio 778<br>Esquel, Chubut, Argentina</div>
+          </div>
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.23h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.75-1.13a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+            <div class="cc-detail"><a href="tel:+5492945697412">+54 9 2945 697412</a></div>
+          </div>
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+            <div class="cc-detail"><a href="https://elbigua.com.ar" target="_blank">elbigua.com.ar</a></div>
+          </div>
+          <div class="cc-row">
+            <span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            <div class="cc-detail">Sala de Convenciones disponible<br>Consultar por eventos y grupos</div>
+          </div>
+        </div>
+        <a href="https://wa.me/5492945697412?text=Hola%20El%20Big%C3%BC%C3%A1!" target="_blank" class="btn-wa">
+          <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          WhatsApp Tehuelche
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer id="footer">
+    <div class="footer-brand">HENKO S.A.</div>
+    <div class="footer-links">
+      <a href="https://www.hotelaguada.com" target="_blank">hotelaguada.com</a>
+      <a href="https://elbigua.com.ar" target="_blank">elbigua.com.ar</a>
+      <a href="https://aguada-restaurante.vercel.app" target="_blank">Restaurante Aguada</a>
+    </div>
+    <p class="footer-copy">Henko S.A. — Trelew · Esquel · Patagonia Argentina</p>
+    <div class="footer-studio">
+      Creado por <a href="https://dio-portfolio-two.vercel.app" target="_blank">Studio</a>
+    </div>
+  </footer>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script>
+  /* === LOADER === */
+  const loader = document.getElementById('loader');
+  const lbar   = document.getElementById('lbar');
+  const ldLogo = loader.querySelector('.ld-logo');
+  const ldPre  = loader.querySelector('.ld-pre');
+  const ldTag  = loader.querySelector('.ld-tag');
+
+  function show(el, delay, extra = {}) {
+    setTimeout(() => Object.assign(el.style, { transition:'all 0.9s cubic-bezier(0.16,1,0.3,1)', opacity:'1', transform:'translateY(0)', ...extra }), delay);
+  }
+
+  show(ldPre,  100);
+  show(ldLogo, 300);
+  show(ldTag,  600);
+  setTimeout(() => { lbar.style.transition = 'width 2.2s cubic-bezier(0.16,1,0.3,1)'; lbar.style.width = '100%'; }, 400);
+
+  setTimeout(() => {
+    loader.style.transition = 'opacity 0.8s ease, transform 0.7s ease';
+    loader.style.opacity    = '0';
+    loader.style.transform  = 'translateY(-18px)';
+    setTimeout(() => loader.remove(), 800);
+  }, 2800);
+
+  /* === NAV === */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('solid', window.scrollY > 50), { passive:true });
+
+  /* === CHAPTER DOTS === */
+  const dots     = document.querySelectorAll('.cdot');
+  const sections = ['hero','historia','trelew-hero','habitaciones','atractivos','esquel-hero','bigua','contacto'];
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      document.getElementById(sections[i])?.scrollIntoView({ behavior:'smooth' });
+    });
+  });
+
+  const sectionIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const idx = sections.indexOf(e.target.id);
+        if (idx >= 0) { dots.forEach(d => d.classList.remove('active')); if (dots[idx]) dots[idx].classList.add('active'); }
+      }
+    });
+  }, { threshold: 0.35 });
+
+  sections.forEach(id => { const el = document.getElementById(id); if (el) sectionIO.observe(el); });
+
+  /* === REVEAL === */
+  const revIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revIO.unobserve(e.target); } });
+  }, { threshold: 0.05, rootMargin: '0px 0px 0px 0px' });
+
+  document.querySelectorAll('.rv, .img-reveal').forEach(el => revIO.observe(el));
+
+  /* === COUNTERS === */
+  const ctrIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = +el.dataset.target, suffix = el.dataset.suffix || '';
+      let cur = 0;
+      const inc = target / (1800 / 16);
+      const t = setInterval(() => { cur += inc; if (cur >= target) { cur = target; clearInterval(t); } el.textContent = Math.floor(cur) + suffix; }, 16);
+      ctrIO.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-num[data-target]').forEach(c => ctrIO.observe(c));
+
+  /* === GSAP — solo parallax y hero, sin conflicto con .rv === */
+  window.addEventListener('load', () => {
+    if (typeof gsap === 'undefined') return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* Hero entrance — hero-half no tiene .rv, sin conflicto */
+    gsap.from('.hero-half', { opacity:0, duration:1.8, stagger:0.25, ease:'power3.out', delay:3 });
+    gsap.from('.hero-center', { opacity:0, y:30, duration:1.4, ease:'power3.out', delay:3.3 });
+
+    /* Parallax en heroes de sección — solo gsap.to(), sin opacity */
+    gsap.to('#trelew-hero .th-bg img', {
+      scrollTrigger:{ trigger:'#trelew-hero', start:'top top', end:'bottom top', scrub:true },
+      y: 100
+    });
+    gsap.to('#esquel-hero .eh-bg img', {
+      scrollTrigger:{ trigger:'#esquel-hero', start:'top top', end:'bottom top', scrub:true },
+      y: 100
+    });
+  });
+
+  /* === SMOOTH ANCHORS === */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth' }); }
+    });
+  });
+  </script>
+</body>
+</html>
