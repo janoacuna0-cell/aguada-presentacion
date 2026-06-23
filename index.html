@@ -29,6 +29,7 @@
     html { font-size:16px; scroll-behavior:auto; -webkit-font-smoothing:antialiased; }
     body { background:var(--void); color:var(--salt); font-family:var(--ff-b); font-weight:300; overflow-x:hidden; }
     img  { display:block; width:100%; height:100%; object-fit:cover; }
+    picture { display:block; width:100%; height:100%; }
     a    { color:inherit; text-decoration:none; }
     button { background:none; border:none; cursor:pointer; color:inherit; font-family:inherit; }
     ::selection { background:var(--gold); color:var(--void); }
@@ -349,9 +350,6 @@
         scrollbar-width:none;
         gap:1rem;
         padding-bottom:.75rem;
-        margin-left:-1.25rem;
-        margin-right:-1.25rem;
-        padding-left:1.25rem;
         padding-right:1.25rem;
       }
       .hab-grid::-webkit-scrollbar { display:none; }
@@ -363,6 +361,7 @@
         transform:none !important;
       }
       .hab-card-img { height:200px; }
+      .hab-card-img img { filter:brightness(.78) saturate(.85); }
 
       /* Servicios */
       .serv-grid { grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); }
@@ -386,9 +385,6 @@
         scrollbar-width:none;
         gap:1rem;
         padding-bottom:.75rem;
-        margin-left:-1.25rem;
-        margin-right:-1.25rem;
-        padding-left:1.25rem;
         padding-right:1.25rem;
       }
       .atr-grid::-webkit-scrollbar { display:none; }
@@ -400,6 +396,7 @@
         opacity:1 !important;
         transform:none !important;
       }
+      .atr-card img { filter:brightness(.62) saturate(.8); }
       .atr-body { padding:1.25rem 1rem; }
       .atr-name { font-size:1rem; }
 
@@ -600,7 +597,10 @@
     <div class="hab-grid">
       <div class="hab-card rv d1">
         <div class="hab-card-img img-reveal">
-          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a166d6e0c332eecb443_Habitaci%C3%B3n%20Dobloe-Matrimonial%20(2).avif" alt="Doble Matrimonial Estándar">
+          <picture>
+            <source srcset="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a166d6e0c332eecb443_Habitaci%C3%B3n%20Dobloe-Matrimonial%20(2).avif" type="image/avif">
+            <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a166d6e0c332eecb443_Habitaci%C3%B3n%20Dobloe-Matrimonial%20(2).jpg" alt="Doble Matrimonial Estándar" onerror="this.style.opacity='0'">
+          </picture>
         </div>
         <div class="hab-card-body">
           <p class="hab-card-tag">Doble · 16 m²</p>
@@ -611,7 +611,10 @@
       </div>
       <div class="hab-card rv d2">
         <div class="hab-card-img img-reveal">
-          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a15f625e04e46eb8658_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(3).avif" alt="Doble Twin Estándar">
+          <picture>
+            <source srcset="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a15f625e04e46eb8658_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(3).avif" type="image/avif">
+            <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a15f625e04e46eb8658_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(3).jpg" alt="Doble Twin Estándar" onerror="this.style.opacity='0'">
+          </picture>
         </div>
         <div class="hab-card-body">
           <p class="hab-card-tag">Doble Twin · 16 m²</p>
@@ -622,7 +625,10 @@
       </div>
       <div class="hab-card rv d3">
         <div class="hab-card-img img-reveal">
-          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a16a5d6dc7d56ef7b36_Habitaci%C3%B3n%20Doble-Matrimonial%20(1).avif" alt="Matrimonial Superior">
+          <picture>
+            <source srcset="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a16a5d6dc7d56ef7b36_Habitaci%C3%B3n%20Doble-Matrimonial%20(1).avif" type="image/avif">
+            <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a16a5d6dc7d56ef7b36_Habitaci%C3%B3n%20Doble-Matrimonial%20(1).jpg" alt="Matrimonial Superior" onerror="this.style.opacity='0'">
+          </picture>
         </div>
         <div class="hab-card-body">
           <p class="hab-card-tag">Superior · 20 m²</p>
@@ -633,7 +639,10 @@
       </div>
       <div class="hab-card rv d4">
         <div class="hab-card-img img-reveal">
-          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a2a6b60b296b8405df7_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(2)%20(1).avif" alt="Twin Superior">
+          <picture>
+            <source srcset="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a2a6b60b296b8405df7_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(2)%20(1).avif" type="image/avif">
+            <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a2a6b60b296b8405df7_Habitaci%C3%B3n%20Doble%20-%20Cama%20Individual%20(2)%20(1).jpg" alt="Twin Superior" onerror="this.style.opacity='0'">
+          </picture>
         </div>
         <div class="hab-card-body">
           <p class="hab-card-tag">Twin Superior · 20 m²</p>
@@ -655,7 +664,10 @@
       </div>
       <div class="hab-card rv d3">
         <div class="hab-card-img img-reveal">
-          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a169cb112ecea76e41b_Triple%20PARTE%20NUEVA%20(2).avif" alt="Triple Superior">
+          <picture>
+            <source srcset="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a169cb112ecea76e41b_Triple%20PARTE%20NUEVA%20(2).avif" type="image/avif">
+            <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/671a0a169cb112ecea76e41b_Triple%20PARTE%20NUEVA%20(2).jpg" alt="Triple Superior" onerror="this.style.opacity='0'">
+          </picture>
         </div>
         <div class="hab-card-body">
           <p class="hab-card-tag">Triple Superior · 20 m²</p>
@@ -772,7 +784,10 @@
       </div>
 
       <div class="atr-card img-reveal rv d2">
-        <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/6719fed67c64bc246cbb65e5_Atractivos%200202.avif" alt="Colonia Galesa">
+        <picture>
+          <source srcset="https://cdn.prod.website-files.com/6719137ff2263590d6965337/6719fed67c64bc246cbb65e5_Atractivos%200202.avif" type="image/avif">
+          <img src="https://cdn.prod.website-files.com/6719137ff2263590d6965337/6719fed67c64bc246cbb65e5_Atractivos%200202.jpg" alt="Colonia Galesa" onerror="this.style.opacity='0'">
+        </picture>
         <div class="atr-body">
           <h4 class="atr-name">Valle Inferior del Río Chubut</h4>
           <p class="atr-dist">Colonia Galesa · Gaiman</p>
