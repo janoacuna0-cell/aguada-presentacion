@@ -130,7 +130,7 @@
     .tl-sub  { font-size:.65rem; color:var(--ash); letter-spacing:.05em; line-height:1.6; }
 
     /* ===================== STATS ===================== */
-    #stats { background:var(--dark3); display:grid; grid-template-columns:repeat(4,1fr); }
+    #stats { background:var(--dark3); display:grid; grid-template-columns:repeat(3,1fr); }
     .stat-item { padding:3rem 2rem; text-align:center; border-right:1px solid rgba(234,234,234,.06); }
     .stat-item:last-child { border-right:none; }
     .stat-num { font-family:var(--ff-d); font-size:clamp(3rem,5vw,4.5rem); font-weight:300; color:var(--gold); line-height:1; margin-bottom:.75rem; }
@@ -286,8 +286,7 @@
     /* ===================== RESPONSIVE ===================== */
     @media (max-width:900px) {
       .historia-grid,.serv-intro,.bigua-layout,.eventos-layout,.contact-grid { grid-template-columns:1fr; }
-      #stats { grid-template-columns:1fr 1fr; }
-      .stat-item:nth-child(2) { border-right:none; }
+      #stats { grid-template-columns:1fr 1fr 1fr; }
       .atr-grid { grid-template-columns:1fr; }
       .historia-photo { height:360px; }
       .serv-photo { height:300px; }
@@ -334,8 +333,8 @@
       .tl-text { font-size:1.05rem; }
 
       /* Stats */
-      #stats { grid-template-columns:1fr 1fr; }
-      .stat-item { border-right:none; border-bottom:1px solid rgba(234,234,234,.06); padding:2rem 1rem; }
+      #stats { grid-template-columns:1fr 1fr 1fr; }
+      .stat-item { border-right:none; border-bottom:1px solid rgba(234,234,234,.06); padding:1.5rem .75rem; }
 
       /* Héroes de sección (Trelew y Esquel) */
       .th-body,.eh-body { padding:2.5rem 1.25rem; }
@@ -559,10 +558,6 @@
     <div class="stat-item">
       <div class="stat-num" data-target="50" data-suffix="+">0</div>
       <div class="stat-label">Años de Historia</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-target="3">0</div>
-      <div class="stat-label">Generaciones</div>
     </div>
     <div class="stat-item">
       <div class="stat-num green" data-target="2">0</div>
