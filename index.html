@@ -278,9 +278,9 @@
     .footer-links { display:flex; gap:2rem; flex-wrap:wrap; }
     .footer-links a { font-size:.46rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ash); transition:color .3s; }
     .footer-links a:hover { color:var(--salt); }
-    .footer-studio { width:100%; border-top:1px solid rgba(234,234,234,.06); padding-top:1.5rem; text-align:center; font-size:.44rem; letter-spacing:.18em; color:var(--ash); }
-    .footer-studio a { color:var(--ash2); transition:color .3s; }
-    .footer-studio a:hover { color:var(--salt); }
+    .footer-studio { width:100%; border-top:1px solid rgba(234,234,234,.06); padding-top:1.5rem; text-align:center; font-size:.7rem; letter-spacing:.12em; color:var(--ash2); }
+    .footer-studio a { color:var(--salt); transition:color .3s; font-weight:400; }
+    .footer-studio a:hover { color:var(--gold); }
 
     /* ===================== RESPONSIVE ===================== */
     @media (max-width:900px) {
@@ -323,6 +323,9 @@
       .sec { padding:2.5rem 1.25rem; }
       .sec-h1 { font-size:clamp(1.9rem,7.5vw,3rem); }
 
+      /* Fotos: quitar overlay de img-reveal en móvil para mostrarlas directamente */
+      .img-reveal::after { display:none; }
+
       /* Historia */
       .historia-photo { height:230px; }
       .tl-dot { flex:0 0 3.5rem; height:3.5rem; font-size:.8rem; }
@@ -337,12 +340,33 @@
       .th-body,.eh-body { padding:2.5rem 1.25rem; }
       .th-title,.eh-title { font-size:clamp(2.4rem,11vw,4.5rem); }
 
-      /* Habitaciones */
-      .hab-grid { grid-template-columns:1fr; }
+      /* Habitaciones — carrusel horizontal deslizable */
+      .hab-grid {
+        display:flex;
+        overflow-x:auto;
+        scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+        gap:1rem;
+        padding-bottom:.75rem;
+        margin-left:-1.25rem;
+        margin-right:-1.25rem;
+        padding-left:1.25rem;
+        padding-right:1.25rem;
+      }
+      .hab-grid::-webkit-scrollbar { display:none; }
+      .hab-card {
+        flex:0 0 82vw;
+        flex-shrink:0;
+        scroll-snap-align:start;
+        opacity:1 !important;
+        transform:none !important;
+      }
       .hab-card-img { height:200px; }
 
       /* Servicios */
       .serv-grid { grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); }
+      .serv-photo { height:220px; }
 
       /* Restaurante card — gradiente de abajo a arriba para móvil */
       .rest-card { height:auto; min-height:440px; }
@@ -353,8 +377,29 @@
       .rest-card-title { font-size:clamp(1.8rem,7vw,2.8rem); }
       .rest-card-copy { font-size:.75rem; }
 
-      /* Atractivos */
-      .atr-card { height:240px; }
+      /* Atractivos — carrusel horizontal deslizable */
+      .atr-grid {
+        display:flex;
+        overflow-x:auto;
+        scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+        gap:1rem;
+        padding-bottom:.75rem;
+        margin-left:-1.25rem;
+        margin-right:-1.25rem;
+        padding-left:1.25rem;
+        padding-right:1.25rem;
+      }
+      .atr-grid::-webkit-scrollbar { display:none; }
+      .atr-card {
+        flex:0 0 85vw;
+        flex-shrink:0;
+        height:260px;
+        scroll-snap-align:start;
+        opacity:1 !important;
+        transform:none !important;
+      }
       .atr-body { padding:1.25rem 1rem; }
       .atr-name { font-size:1rem; }
 
@@ -365,7 +410,8 @@
 
       /* Eventos */
       .eventos-configs { grid-template-columns:1fr; }
-      .eventos-photo { height:220px; }
+      .eventos-photo { height:180px; }
+      .eventos-photo img { padding:1rem !important; }
 
       /* Contacto */
       .contact-card { padding:1.75rem 1.25rem; }
@@ -963,7 +1009,7 @@
     </div>
     <p class="footer-copy">Henko S.A. — Trelew · Esquel · Patagonia Argentina</p>
     <div class="footer-studio">
-      Creado por <a href="https://dio-portfolio-two.vercel.app" target="_blank">Studio</a>
+      Creado por <a href="https://studio-portfolio-two.vercel.app/" target="_blank">Studio</a>
     </div>
   </footer>
 
@@ -1023,6 +1069,11 @@
   }, { threshold: 0.05, rootMargin: '0px 0px 0px 0px' });
 
   document.querySelectorAll('.rv, .img-reveal').forEach(el => revIO.observe(el));
+
+  /* Fallback: revelar todo lo que el observer no haya capturado tras 3 s */
+  setTimeout(() => {
+    document.querySelectorAll('.rv:not(.in), .img-reveal:not(.in)').forEach(el => el.classList.add('in'));
+  }, 3000);
 
   /* === COUNTERS === */
   const ctrIO = new IntersectionObserver((entries) => {
